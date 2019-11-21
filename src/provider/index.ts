@@ -125,7 +125,13 @@ class ThorProvider extends EventEmitter {
 
             ws.onopen = () => {
                 debug('[ws]opened')
+                let pingFunction = setInterval(() => {
+                    if (ws && ws.readyState === ws.OPEN) {
+                        ws.pong();
+                    }
+                }, 5000)
                 ws.onclose = (event) => {
+                    clearInterval(pingFunction);
                     debug('[ws]close', event.code, event.reason)
                     let errMsg = 'Connection closed.'
                     if (event.code) {
